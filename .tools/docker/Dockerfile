@@ -46,18 +46,13 @@ RUN set -eux; \
         pdo_pgsql \
     ;
 
-COPY --link php/etc/conf.d/app.ini $PHP_INI_DIR/conf.d/
-
-COPY --link php/php-fpm.d/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 RUN mkdir -p /var/run/php
 
-COPY --link php/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
-RUN chmod +x /usr/local/bin/docker-healthcheck
+#RUN chmod +x /usr/local/bin/docker-healthcheck
 
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["docker-healthcheck"]
 
-COPY --link php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+#RUN chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
@@ -70,21 +65,19 @@ COPY --from=composer_upstream --link /composer /usr/bin/composer
 
 RUN composer require symfony/orm-pack
 RUN composer require symfony/test-pack
+RUN composer require symfony/security-bundle
 
 # Dev PHP image
 FROM php_base AS php_dev
 
 ENV APP_ENV=dev XDEBUG_MODE=off
-VOLUME /var/www/var/
 
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+RUN chown -R www-data:www-data /var/www
 
 RUN set -eux; \
     install-php-extensions \
       xdebug \
     ;
-
-COPY --link php/etc/conf.d/app.dev.ini $PHP_INI_DIR/conf.d/
 
 WORKDIR /var/www
 
@@ -96,9 +89,6 @@ CMD ["php-fpm"]
 #FROM php_base AS php_prod
 #
 #ENV APP_ENV=prod
-#
-#RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-#COPY --link php/etc/conf.d/app.prod.ini $PHP_INI_DIR/conf.d/
 #
 ## prevent the reinstallation of vendors at every changes in the source code
 #COPY --link composer.* symfony.* ./

@@ -30,9 +30,9 @@ services:
 #      DATABASE_URL: postgresql://${DB_USER:-app}:${DB_PASS:-!ChangeMe!}@postgres:5432/${DB_DATABASE:-app}?serverVersion=${POSTGRES_VERSION:-15}&charset=${POSTGRES_CHARSET:-utf8}
     volumes:
       - ../../:/var/www/
-      - ./php/etc/php-development.ini:/usr/local/etc/php/php.ini
-      - ./php/etc/conf.d/app.dev.ini:/usr/local/etc/php/conf.d/app.dev.ini:ro
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./php/docker-healthcheck.sh:/usr/local/bin/docker-healthcheck
+      - ./php/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint
 #       Better performance?
 #      - /var/www
 
@@ -45,9 +45,8 @@ services:
       - "${COMPOSE_IP}:${COMPOSE_PORT_HTTP}:80"
       - "${COMPOSE_IP}:8143:443"
     volumes:
-      - ../../:/var/www
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ../../:/var/www/
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
 
 volumes:
   database_data:
