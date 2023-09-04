@@ -63,7 +63,7 @@ docker exec -it ${COMPOSE_PROJECT_NAME}_php php bin/console doctrine:database:cr
 
 echo -e "${BOLD}${RED}---------${RESET}"
 echo -e "php bin/console doctrine:migrations:migrate"
-docker exec -it ${COMPOSE_PROJECT_NAME}_php php bin/console doctrine:migrations:migrate
+docker exec -it ${COMPOSE_PROJECT_NAME}_php php bin/console --no-interaction doctrine:migrations:migrate
 
 #Connect internal docker network
 #echo -e "${BOLD}${RED}---------${RESET}"
