@@ -81,6 +81,12 @@ RUN set -eux; \
 
 WORKDIR /var/www
 
+RUN composer require --dev symfony/maker-bundle
+RUN composer require --dev symfony/debug-pack
+
+RUN php bin/console --env=test doctrine:database:create;
+RUN php bin/console --env=test doctrine:schema:create;
+
 EXPOSE 9000
 
 CMD ["php-fpm"]
